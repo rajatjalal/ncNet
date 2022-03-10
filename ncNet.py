@@ -16,11 +16,17 @@ from preprocessing.build_vocab import build_vocab
 from utilities.vis_rendering import VegaZero2VegaLite
 from preprocessing.process_dataset import ProcessData4Training
 from vega import VegaLite
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 class ncNet(object):
     def __init__(self, trained_model):
+
+        #tokenizer = AutoTokenizer.from_pretrained("tscholak/2jrayxos")
+        #model = AutoModelForSeq2SeqLM.from_pretrained("tscholak/2jrayxos")
+        #print("CoSQL Model: ",model)
+
         self.data = None
         self.db_id = ''
         self.table_id = ''
@@ -165,6 +171,8 @@ class ncNet(object):
         query2vl = VegaZero2VegaLite()
 
         input_src, token_types = self.process_input(nl_question, chart_template)
+        print("Input source: ",input_src)
+        print("Token type: ",token_types)
 
         if visualization_aware_translation == True:
             # print("\nGenerate the visualization by visualization-aware translation:\n")
@@ -186,8 +194,9 @@ class ncNet(object):
             print('[Chart Template]:', chart_template)
             print('[Predicted VIS Query]:', pred_query)
 
-            # print('[The Predicted VIS Result]:')
-            return VegaLite(query2vl.to_VegaLite(pred_query, self.data)), query2vl.to_VegaLite(pred_query, self.data)
+            vegaLit = VegaLite(query2vl.to_VegaLite(pred_query, self.data)), query2vl.to_VegaLite(pred_query, self.data)
+            #print('[The Predicted vegalite]:', vegaLit)
+            return vegaLit
             # print('\n')
 
         else:
@@ -205,12 +214,13 @@ class ncNet(object):
 
             pred_query = ' '.join(pred_query.replace('"', "'").split())
 
-            print('[NL Question]:', nl_question)
-            print('[Chart Template]:', chart_template)
-            print('[Predicted VIS Query]:', pred_query)
+            #print('[NL Question]:', nl_question)
+            #print('[Chart Template]:', chart_template)
+            #print('[Predicted VIS Query]:', pred_query)
 
-            # print('[The Predicted VIS Result]:')
-            return VegaLite(query2vl.to_VegaLite(pred_query, self.data)), query2vl.to_VegaLite(pred_query, self.data)
+            vegaLit = VegaLite(query2vl.to_VegaLite(pred_query, self.data)), query2vl.to_VegaLite(pred_query, self.data)
+            #print('[The Predicted vegalite]:', vegaLit)
+            return vegaLit
 
 
     def process_input(self, nl_question, chart_template):
@@ -282,6 +292,8 @@ class ncNet(object):
         )
         col_names = ' '.join(str(e) for e in col_names)
         value_names = ' '.join(str(e) for e in value_names)
+        print("col_names: ",col_names)
+        print("value_names: ",value_names)
         input_src = "<N> {} </N> <C> {} </C> <D> {} <COL> {} </COL> <VAL> {} </VAL> </D>".format(nl_question, query_template, self.table_id, col_names, value_names).lower()
         token_types = get_token_types(input_src)
 
