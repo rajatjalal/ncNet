@@ -1,7 +1,7 @@
 __author__ = "Yuyu Luo"
 
 import torch
-from torchtext.legacy.data import Field, TabularDataset, BucketIterator
+from torchtext.data import Field, TabularDataset, BucketIterator
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
