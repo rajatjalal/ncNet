@@ -96,12 +96,16 @@ class ncNet(object):
         self.table_id = table_name
 
         if data_type == 'csv':
+            '''
+            
             if data != None and data_url == None:
                 self.data = data
             elif data == None and data_url != None:
                 self.data = pd.read_csv(data_url)
             else:
                 raise ValueError('Please only specify one of the data or data_url')
+            '''
+            self.data = data
         elif data_type == 'json':
             if data == None and data_url != None:
                 self.data = pd.read_json(data_url)
@@ -154,7 +158,9 @@ class ncNet(object):
 
         self.DataProcesser = ProcessData4Training(db_url='./dataset/database')
         self.db_table_col_val_map = dict()
-        table_cols = self.DataProcesser.get_table_columns(self.db_id)
+        # table_cols = self.DataProcesser.get_table_columns(self.db_id)
+        table_cols = {self.table_id: self.data.columns.values.tolist()}
+        # print(table_cols)
         self.db_table_col_val_map[self.db_id] = dict()
         for table, cols in table_cols.items():
             col_val_map = self.DataProcesser.get_values_in_columns(self.db_id, table, cols, conditions='remove')
@@ -195,7 +201,7 @@ class ncNet(object):
             print('[Predicted VIS Query]:', pred_query)
 
             vegaLit = VegaLite(query2vl.to_VegaLite(pred_query, self.data)), query2vl.to_VegaLite(pred_query, self.data)
-            #print('[The Predicted vegalite]:', vegaLit)
+            print('[The Predicted vegalite]:', vegaLit)
             return vegaLit
             # print('\n')
 
@@ -219,7 +225,7 @@ class ncNet(object):
             #print('[Predicted VIS Query]:', pred_query)
 
             vegaLit = VegaLite(query2vl.to_VegaLite(pred_query, self.data)), query2vl.to_VegaLite(pred_query, self.data)
-            #print('[The Predicted vegalite]:', vegaLit)
+            print('[The Predicted vegalite]:', vegaLit)
             return vegaLit
 
 
